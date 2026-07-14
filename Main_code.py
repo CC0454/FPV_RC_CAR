@@ -1,20 +1,37 @@
-from machine import Pin, UART
+from machine import PWM, Pin, UART
 from time import sleep, sleep_us
 
 uart1 = UART(0, baudrate=420000, tx=Pin(0), rx=Pin(1))
 
-print_throttle = 0
-def print_channel(channel_input):
-    print_string = ""
+
+
+
+
+def format_channel(channel_input):
+    formatted_channel_list = []
+    
     for i in channel_input:
         rounded_channel = int(100 * ((i - 173) / 1637))
-        print_string += str(rounded_channel)
+        formatted_channel_list += [rounded_channel]
+    #174 / 1811 
+    print_channel(formatted_channel_list)
+    return formatted_channel_list
+
+
+        
+
+
+def print_channel(formatted_channel_list):
+    print_string = ""
+    for formatted_channel in formatted_channel_list:
+        print_string += str(formatted_channel)
         print_string += "% | "
+        
     print(print_string)
-    #174 / 1811
+
 
 def decode(parent):
-    if len(parent) < 2:
+    if len(parent) < 10:
         return
     
     byte1 = parent[0]
@@ -54,18 +71,20 @@ def decode(parent):
     # SD
     channel8 = ((byte10 >> 5) | (byte11 << 3)) & 0x7FF
     
-    print_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8])
+    return format_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8])
     
 
     
 while True:
+    formatted_channels = "none"
     if uart1.read(1) == b'\x16':
         
         payload = uart1.read(24)
         if payload != b'':
-            decode(payload)
-            
+            formatted_channels = decode(payload)
+    
     sleep_us(100)
     
     
     
+ 
