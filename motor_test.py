@@ -4,11 +4,15 @@ from time import sleep
 servo = PWM(Pin(2))
 servo.freq(50)
 
+range = 100
+base = 0
+max = 65535 - base
+
 while True:
     #angle to pwm:
-    angle = int(input("Angle\n>"))
-    pwm = int(((angle/180) * 6000) + 2000)
+    precentage = int(input("Precentage\n>"))
+    pwm = int(((precentage/range) * max) + base)
     print(pwm)
     servo.duty_u16(pwm)
 
-#range = 2000 - 8000
+#range = 0- 65535

@@ -3,9 +3,12 @@ from time import sleep, sleep_us
 
 uart1 = UART(0, baudrate=420000, tx=Pin(0), rx=Pin(1))
 
+# Servo range: 3166 - 6333
+servo = PWM(Pin(2))
+servo.freq(50)
 
-
-
+motor = PWM(Pin(3))
+motor.freq(50)
 
 def format_channel(channel_input):
     formatted_channel_list = []
@@ -16,9 +19,6 @@ def format_channel(channel_input):
     #174 / 1811 
     print_channel(formatted_channel_list)
     return formatted_channel_list
-
-
-        
 
 
 def print_channel(formatted_channel_list):
