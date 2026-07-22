@@ -7,8 +7,24 @@ uart1 = UART(0, baudrate=420000, tx=Pin(0), rx=Pin(1))
 servo = PWM(Pin(2))
 servo.freq(50)
 
+# Motor range: 3333 - 5966
 motor = PWM(Pin(3))
 motor.freq(50)
+
+# Reverse range: 3333 - 5966
+reverse = PWM(Pin(4))
+reverse.freq(50)
+
+hardware_list = [[motor, 2, 3333, 2633], [servo, 0, 3166, 3167],[reverse, 4, 3333, 2633]]
+
+
+def push_to_hardware(channel_packet):
+    for device in hardware_list:
+        for index, channel in enumerate(channel_packet):
+            if index == device[1]:
+                pwm = int(((channel/100) * device[3]) + device[2])
+                device[0].duty_u16(pwm)
+                
 
 def format_channel(channel_input):
     formatted_channel_list = []
@@ -17,7 +33,7 @@ def format_channel(channel_input):
         rounded_channel = int(100 * ((i - 173) / 1637))
         formatted_channel_list += [rounded_channel]
     #174 / 1811 
-    print_channel(formatted_channel_list)
+    #print_channel(formatted_channel_list)
     return formatted_channel_list
 
 
@@ -82,9 +98,10 @@ while True:
         payload = uart1.read(24)
         if payload != b'':
             formatted_channels = decode(payload)
+            push_to_hardware(formatted_channels)
     
     sleep_us(100)
     
     
     
- 
+   

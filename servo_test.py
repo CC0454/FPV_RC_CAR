@@ -1,7 +1,7 @@
-from machine import Pin, PWM
+ from machine import Pin, PWM
 from time import sleep
 
-servo = PWM(Pin(2))
+servo = PWM(Pin(5))
 servo.freq(50)
 
 range = 180
