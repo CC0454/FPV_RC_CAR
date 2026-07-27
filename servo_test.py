@@ -1,4 +1,5 @@
- from machine import Pin, PWM
+'''This code is used to test servo PWM ranges'''
+from machine import Pin, PWM
 from time import sleep
 
 servo = PWM(Pin(5))

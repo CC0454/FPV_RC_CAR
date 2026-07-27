@@ -1,6 +1,9 @@
+'''This code is used to drve a rasberry Pi powered car'''
+# Main imports
 from machine import PWM, Pin, UART
 from time import sleep, sleep_us
 
+# ELRS / CRSF UART Pin import
 uart1 = UART(0, baudrate=420000, tx=Pin(0), rx=Pin(1))
 
 # Servo range: 3166 - 6333
@@ -15,16 +18,24 @@ motor.freq(50)
 reverse = PWM(Pin(4))
 reverse.freq(50)
 
+# A list of external hardware, Format [[varible, allocated channel, min PWM, PWM range (max - min)]]
 hardware_list = [[motor, 2, 3333, 2633], [servo, 0, 3166, 3167],[reverse, 4, 3333, 2633]]
 
-
 def push_to_hardware(channel_packet):
+    # This funciton converts channels to PWM then pushes it to the external hardware. 
+    for device in hardware_list:
+        pwm = int(((channel_packet[device[1]]/100) * device[3]) + device[2])
+        device[0].duty_u16(pwm)
+
+'''
+def push_to_hardware(channel_packet):
+    # This funciton converts channels to PWM then pushes it to the external hardware. 
     for device in hardware_list:
         for index, channel in enumerate(channel_packet):
             if index == device[1]:
                 pwm = int(((channel/100) * device[3]) + device[2])
                 device[0].duty_u16(pwm)
-                
+'''        
 
 def format_channel(channel_input):
     formatted_channel_list = []
@@ -89,8 +100,8 @@ def decode(parent):
     
     return format_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8])
     
+count = 0 
 
-    
 while True:
     formatted_channels = "none"
     if uart1.read(1) == b'\x16':
@@ -99,9 +110,8 @@ while True:
         if payload != b'':
             formatted_channels = decode(payload)
             push_to_hardware(formatted_channels)
-    
+    count += 1
+    if count == 10000:
+        print(count)
     sleep_us(100)
-    
-    
-    
-   
+     

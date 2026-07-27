@@ -1,3 +1,4 @@
+'''This code is used to test ESC PWM ranges.'''
 from machine import Pin, PWM
 from time import sleep
 
