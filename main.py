@@ -14,6 +14,7 @@ servo.freq(50)
 motor = PWM(Pin(3))
 motor.freq(50)
 
+  
 # Reverse range: 3333 - 5966
 reverse = PWM(Pin(4))
 reverse.freq(50)
@@ -27,15 +28,7 @@ def push_to_hardware(channel_packet):
         pwm = int(((channel_packet[device[1]]/100) * device[3]) + device[2])
         device[0].duty_u16(pwm)
 
-'''
-def push_to_hardware(channel_packet):
-    # This funciton converts channels to PWM then pushes it to the external hardware. 
-    for device in hardware_list:
-        for index, channel in enumerate(channel_packet):
-            if index == device[1]:
-                pwm = int(((channel/100) * device[3]) + device[2])
-                device[0].duty_u16(pwm)
-'''        
+
 
 def format_channel(channel_input):
     formatted_channel_list = []
@@ -58,7 +51,7 @@ def print_channel(formatted_channel_list):
 
 
 def decode(parent):
-    if len(parent) < 10:
+    if len(parent) < 11:
         return
     
     byte1 = parent[0]
@@ -98,7 +91,7 @@ def decode(parent):
     # SD
     channel8 = ((byte10 >> 5) | (byte11 << 3)) & 0x7FF
     
-    return format_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8])
+    push_to_hardware(format_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8]))
     
 count = 0 
 
@@ -108,10 +101,7 @@ while True:
         
         payload = uart1.read(24)
         if payload != b'':
-            formatted_channels = decode(payload)
-            push_to_hardware(formatted_channels)
-    count += 1
-    if count == 10000:
-        print(count)
+            decode(payload)
+
     sleep_us(100)
      
