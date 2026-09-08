@@ -58,6 +58,7 @@ def push_to_hardware(channel_packet):
 
 
 def format_channel(channel_input):
+    # This funcition takes raw bit input and formats it to a precentage from 0 to 100
     formatted_channel_list = []
     
     for i in channel_input:
@@ -69,6 +70,7 @@ def format_channel(channel_input):
 
 
 def print_channel(formatted_channel_list):
+    # This function is used for debuging and prints out the precentages of all channels.
     print_string = ""
     for formatted_channel in formatted_channel_list:
         print_string += str(formatted_channel)
@@ -78,6 +80,7 @@ def print_channel(formatted_channel_list):
 
 
 def decode(parent):
+    # this funciton takes the packet, dissects it into a raw data list and sends it to the format_channel funcition to get formatted
     if len(parent) < 11:
         return
     
@@ -120,9 +123,9 @@ def decode(parent):
     
     push_to_hardware(format_channel([channel1, channel2, channel3, channel4, channel5, channel6, channel7, channel8]))
     
-count = 0 
 
 while True:
+    #This is the mainloop 
     formatted_channels = "none"
     if uart1.read(1) == b'\x16':
         
